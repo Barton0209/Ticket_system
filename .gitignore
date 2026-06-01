@@ -1,0 +1,9 @@
+venv/
+__pycache__/
+*.pyc
+data/
+users.local.json
+*.xlsx
+*.xls
+*.pdf
+node_modules/
