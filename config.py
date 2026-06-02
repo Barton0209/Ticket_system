@@ -1,7 +1,7 @@
 # config.py
 """
 ============================================================================
-КОНФИГУРАЦИЯ СИСТЕМЫ
+КОНФИГУРАЦИЯ СИСТЕМЫ (безопасная версия с поддержкой переменных окружения)
 ============================================================================
 """
 
@@ -9,12 +9,30 @@ import json
 import os
 from pathlib import Path
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv не установлен, используем только os.environ
+
 APP_VERSION = "7.2"
 APP_TITLE = f"Система заявок на билеты v{APP_VERSION}"
 
-# HTTP API (этап 2 — Electron)
+# === HTTP API (этап 2 — Electron) ===
 API_HOST = os.environ.get("TICKET_API_HOST", "127.0.0.1")
 API_PORT = int(os.environ.get("TICKET_API_PORT", "8765"))
+
+# === БЕЗОПАСНОСТЬ: API KEY ===
+# ОБЯЗАТЕЛЕН для боевого сервера!
+_API_KEY = os.environ.get("TICKET_API_KEY", "").strip()
+if not _API_KEY:
+    import warnings
+    warnings.warn(
+        "\n⚠️  КРИТИЧНО: TICKET_API_KEY не установлен!\n"
+        "API будет доступен без аутентификации.\n"
+        "Установите: export TICKET_API_KEY='your-secret-key'\n"
+    )
+API_KEY = _API_KEY
 
 # Вкладка «База»: не грузить все строки в таблицу (большие базы зависают)
 BASE_GRID_PAGE_SIZE = 500
@@ -33,38 +51,27 @@ TESSERACT_CMD = os.environ.get(
     r"C:\Tesseract-OCR\tesseract.exe",
 )
 
+# === УЧЁТНЫЕ ДАННЫЕ (безопасное управление) ===
 USERS = {
-    "ОП А-НПС-4А": "qwer11",
-    "ОП Астрахань": "qwer12",
-    "ОП Большой Камень": "qwer13",
-    "ОП Винный город": "qwer14",
-    "ОП Гыдан": "qwer15",
-    "ОП Дивноморское": "qwer16",
-    "ОП Диксон": "qwer17",
-    "ОП Карелия": "qwer18",
-    "ОП Кингисепп": "qwer19",
-    "ОП Криница": "qwer20",
-    "ОП КС-7 Сивакинская": "qwer21",
-    "ОП Кутузовский": "qwer22",
-    "ОП Москва-Сити": "qwer23",
-    "ОП Мурманск": "qwer24",
-    "ОП Новый Уренгой": "qwer25",
-    "ОП Норильск": "qwer26",
-    "ОП ОП АМУР": "qwer27",
-    "ОП ОП Кингисепп 2. ЕвроХим": "qwer28",
-    "ОП РП Новороссийск": "qwer29",
-    "ОП Сахалин": "qwer30",
-    "ОП СВОБОДНЫЙ": "qwer31",
-    "ОП Сочи": "qwer32",
-    "ОП Сочи 2": "qwer33",
-    "ОП Тарко-Сале": "qwer34",
-    "ОП Усть-Луга": "qwer35",
+    # Пароли больше не должны быть здесь!
+    # Вместо этого используйте users.local.json (в .gitignore) или переменные окружения
 }
 
+# === АДМИН УЧЁТНЫЕ ДАННЫЕ (безопасно) ===
+# НИКОГДА не коммитьте реальные пароли в исходный код!
+_ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "").strip()
 ADMIN_CREDENTIALS = {
     "username": "Admin",
-    "password": "Deto4ka111D"
+    "password": _ADMIN_PASSWORD or "changeme",  # По умолчанию заплатка
 }
+
+if not _ADMIN_PASSWORD:
+    import warnings
+    warnings.warn(
+        "\n⚠️  WARNING: ADMIN_PASSWORD не установлен в переменных окружения.\n"
+        "Используется пароль по умолчанию (НЕБЕЗОПАСНО!).\n"
+        "Установите: export ADMIN_PASSWORD='your-secure-password'\n"
+    )
 
 DEFAULT_CONSTANTS = {
     "Операция": "Заказ",
