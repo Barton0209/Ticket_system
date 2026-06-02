@@ -33,33 +33,49 @@ USERS_CACHE_FILE = DATA_DIR / "users_cache.pkl"
 USERS_PASS_FILE = DATA_DIR / "Users+pass.xlsx"
 USERS_LOCAL_FILE = BASE_DIR / "users.local.json"
 
-# Tesseract — кроссплатформенный поиск команды
+# Tesseract — кроссплатформенный поиск команды (Windows-first)
 def _find_tesseract_cmd() -> str:
     import shutil
 
-    # 1) переменная окружения
+    # 1) Переменная окружения имеет приоритет
     env = os.environ.get("TESSERACT_CMD")
     if env:
         return env
 
-    # 2) PATH
-    if shutil.which("tesseract"):
-        return shutil.which("tesseract")
+    # 2) Явный путь для Windows (указан пользователем)
+    win_custom_path = r"C:\Tesseract-OCR\tesseract.exe"
+    if sys.platform == "win32" and os.path.isfile(win_custom_path):
+        return win_custom_path
 
-    # 3) типичные пути
+    # 3) Поиск в PATH
+    tesseract_in_path = shutil.which("tesseract")
+    if tesseract_in_path:
+        return tesseract_in_path
+
+    # 4) Типичные пути установки по умолчанию
     if sys.platform == "win32":
-        typical = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+        typical_paths = [
+            r"C:\Program Files\Tesseract-OCR\tesseract.exe",
+            r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe",
+        ]
+        for path in typical_paths:
+            if os.path.isfile(path):
+                return path
     elif sys.platform == "darwin":
         typical = "/usr/local/bin/tesseract"
+        if os.path.isfile(typical):
+            return typical
     else:
         typical = "/usr/bin/tesseract"
-
-    if os.path.isfile(typical):
-        return typical
+        if os.path.isfile(typical):
+            return typical
 
     return ""
 
 TESSERACT_CMD = _find_tesseract_cmd()
+if not TESSERACT_CMD:
+    print("[WARNING] Tesseract OCR не найден. Обработка сканированных PDF будет недоступна.")
+    print("         Убедитесь, что Tesseract установлен в C:\\Tesseract-OCR\\ или добавьте его в PATH.")
 
 # USERS: по умолчанию пустой словарь — пароли НЕ хранятся в репо.
 # Для локальной разработки можно установить переменную окружения TICKET_DEFAULT_USERS

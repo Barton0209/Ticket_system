@@ -30,8 +30,12 @@ except ImportError:
 try:
     import pytesseract
     TESSERACT_AVAILABLE = True
-    if os.path.isfile(TESSERACT_CMD):
+    if TESSERACT_CMD and os.path.isfile(TESSERACT_CMD):
         pytesseract.pytesseract.tesseract_cmd = TESSERACT_CMD
+    elif TESSERACT_CMD:
+        # Путь указан, но файл не найден - отключаем OCR
+        TESSERACT_AVAILABLE = False
+        log.warning(f"Tesseract не найден по пути: {TESSERACT_CMD}. OCR отключен.")
 except ImportError:
     pass
 
