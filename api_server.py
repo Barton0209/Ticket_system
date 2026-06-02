@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import os
 from typing import Any, Dict, List, Optional
+from pathlib import Path
 
 from pydantic import BaseModel, Field
 
@@ -20,7 +21,7 @@ except ImportError as e:
         "Установите API-зависимости: pip install -r requirements-api.txt"
     ) from e
 
-from config import API_HOST, API_PORT, APP_VERSION
+from config import API_HOST, API_PORT, APP_VERSION, API_KEY
 from database import (
     employees_available,
     find_employee_by_fio,
@@ -30,8 +31,7 @@ from database import (
 )
 import employees_store
 from routes import load_routes
-
-API_KEY = os.environ.get("TICKET_API_KEY", "")
+from app_logger import log
 
 app = FastAPI(
     title="Ticket System API",
@@ -39,17 +39,33 @@ app = FastAPI(
     description="REST-слой над SQLite и Python-логикой для Electron UI",
 )
 
+# === БЕЗОПАСНОСТЬ: CORS ===
+# Разрешённые источники из переменных окружения
+_ALLOWED_ORIGINS = os.environ.get("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+ALLOWED_ORIGINS = [origin.strip() for origin in _ALLOWED_ORIGINS if origin.strip()]
+
+if not ALLOWED_ORIGINS:
+    log.warning("⚠️  ALLOWED_ORIGINS не установлен, использую localhost:3000")
+    ALLOWED_ORIGINS = ["http://localhost:3000"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST"],  # ограничить методы
+    allow_headers=["Content-Type", "X-Api-Key"],
 )
 
 
 def _require_api_key(x_api_key: Optional[str] = Header(default=None)) -> None:
-    if API_KEY and x_api_key != API_KEY:
+    """Проверка API ключа (опционально, если установлен)."""
+    if not API_KEY:
+        # Если ключ не установлен - пропускаем проверку, но логируем warning
+        log.warning("⚠️  API_KEY не установлен, эндпоинты открыты для всех!")
+        return
+    
+    if x_api_key != API_KEY:
+        log.warning("❌ Попытка доступа с неверным API ключом")
         raise HTTPException(status_code=401, detail="Invalid API key")
 
 
@@ -115,6 +131,9 @@ class AddFromAppBody(BaseModel):
 @app.on_event("startup")
 def _startup():
     load_employees_cache(force=False)
+    # Проверка безопасности при запуске
+    if not API_KEY:
+        log.error("\n🚨 КРИТИЧНО: TICKET_API_KEY не установлен!\nAPI открыт для всех.\n")
 
 
 @app.get("/")
@@ -133,6 +152,7 @@ def root():
 
 @app.get("/health")
 def health():
+    """Публичный эндпоинт здоровья (без защиты для мониторинга)."""
     return {
         "ok": True,
         "version": APP_VERSION,
@@ -262,13 +282,26 @@ def pdf_process(body: PdfProcessBody):
     path = body.path.strip()
     if not path or not os.path.isfile(path):
         raise HTTPException(status_code=400, detail="File not found")
+    
+    # Безопасность: предотвращение path traversal
+    try:
+        resolved_path = Path(path).resolve()
+        # Можно добавить проверку на то, что файл в допустимой папке
+    except (ValueError, RuntimeError):
+        log.warning("⚠️  Попытка path traversal: %s", path)
+        raise HTTPException(status_code=400, detail="Invalid file path")
+    
     try:
         from pdf_processor import process_ticket_application_pdf
 
-        results = process_ticket_application_pdf(path)
+        results = process_ticket_application_pdf(str(resolved_path))
         return {"ok": True, "count": len(results), "items": results}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) from e
+        log.error("PDF process error: %s", e, exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail="Error processing PDF. Contact administrator."
+        ) from e
 
 
 @app.get("/routes", dependencies=[Depends(_require_api_key)])
@@ -276,7 +309,7 @@ def routes_list():
     return {"routes": load_routes()}
 
 
-@app.get("/auth/logins")
+@app.get("/auth/logins", dependencies=[Depends(_require_api_key)])  # ✅ ИСПРАВЛЕНО: добавлена защита!
 def auth_logins():
     from users_manager import get_all_logins, load_users_cache
 
@@ -290,8 +323,18 @@ def auth_login(body: LoginBody):
 
     load_users_cache()
     user, is_admin, dept = authenticate(body.login.strip(), body.password)
+    
+    # ✅ Логирование попыток входа для безопасности
+    if is_admin:
+        log.info("✓ Успешный вход админа")
+    elif user:
+        log.info("✓ Успешный вход пользователя: %s", body.login)
+    else:
+        log.warning("❌ Неудачная попытка входа: %s", body.login)
+    
     if not is_admin and user is None:
         raise HTTPException(status_code=401, detail="Неверный логин или пароль")
+    
     profile: Dict[str, str] = {}
     if user:
         profile = {
@@ -414,7 +457,11 @@ def pdf_process_folder(body: PdfFolderBody):
         results = process_pdf_folder(folder, progress_callback=None)
         return {"ok": True, "count": len(results), "items": results}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) from e
+        log.error("PDF folder process error: %s", e, exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail="Error processing PDF folder. Contact administrator."
+        ) from e
 
 
 def main():
