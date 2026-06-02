@@ -1,50 +1,28 @@
 ```
-# Environment files
+# Batch files
+*.bat
+
+# Database
+data/employees.db
+
+# Environment
 .env
 .env.local
 *.env.*
 
-# Logs and temporary files
+# Logs and temp files
 *.log
 *.tmp
 
-# Python specific
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-env/
-venv/
-.venv/
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Database files
-*.db
-*.db-journal
-
-# Backup files
-*.bak
-*.backup
-*.orig
-
-# Windows batch files (if not part of source)
-*.bat
-
-# Coverage reports
-coverage/
-htmlcov/
-.coverage
-*.coverage
-
-# IDE specific
+# Editors
 .vscode/
 .idea/
-*.swp
-*.swo
 
-# OS generated files
-.DS_Store
-Thumbs.db
+# Dependencies
+node_modules/
+.venv/
+venv/
+__pycache__/
+.mypy_cache/
+.pytest_cache/
 ```
