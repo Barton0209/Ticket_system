@@ -32,6 +32,13 @@ def load_draft(expected_department: str = None) -> Tuple[bool, str, Optional[pd.
     if not DRAFT_FILE.exists():
         return False, "Черновик не найден", None, set()
     try:
+        # Проверка целостности pickle файла черновика
+        file_size = DRAFT_FILE.stat().st_size
+        if file_size == 0:
+            return False, "Черновик пуст (нулевой размер)", None, set()
+        if file_size > 100 * 1024 * 1024:  # 100 MB лимит для черновика
+            return False, "Черновик слишком большой (>100MB)", None, set()
+        
         with open(DRAFT_FILE, "rb") as f:
             payload = pickle.load(f)
         dept = payload.get("department", "")

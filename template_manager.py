@@ -69,6 +69,14 @@ def install_template(source_path: str) -> Tuple[bool, str]:
 def get_dropdown_lists() -> Dict[str, List[str]]:
     if TEMPLATE_META_FILE.exists():
         try:
+            # Проверка целостности pickle файла шаблона
+            file_size = TEMPLATE_META_FILE.stat().st_size
+            if file_size == 0:
+                return {}
+            if file_size > 10 * 1024 * 1024:  # 10 MB лимит для метаданных шаблона
+                log.warning("Файл метаданных шаблона слишком большой")
+                return {}
+            
             with open(TEMPLATE_META_FILE, "rb") as f:
                 meta = pickle.load(f)
             return meta.get("lists", {})
