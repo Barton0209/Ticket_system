@@ -141,6 +141,15 @@ def load_users_cache() -> Tuple[bool, str, int]:
         _build_users_from_config()
         return True, f"Пользователи из config: {len(_USERS)}", len(_USERS)
     try:
+        # Проверка целостности pickle файла пользователей
+        file_size = USERS_CACHE_FILE.stat().st_size
+        if file_size == 0:
+            _build_users_from_config()
+            return True, "Кэш пользователей пуст, загружено из config", len(_USERS)
+        if file_size > 10 * 1024 * 1024:  # 10 MB лимит для пользователей
+            _build_users_from_config()
+            return False, "Кэш пользователей слишком большой, загружено из config", len(_USERS)
+        
         with open(USERS_CACHE_FILE, "rb") as f:
             _USERS = pickle.load(f)
         if not _USERS:

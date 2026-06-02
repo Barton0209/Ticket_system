@@ -507,6 +507,13 @@ def load_employees_cache(force: bool = False) -> Tuple[bool, str, int]:
         _USE_SQLITE = False
         return False, "Общая база не найдена. Admin: Настройки → Загрузить базу.", 0
     try:
+        # Проверка целостности pickle файла перед загрузкой
+        file_size = EMPLOYEES_CACHE_FILE.stat().st_size
+        if file_size == 0:
+            return False, "Кэш базы пуст (нулевой размер)", 0
+        if file_size > 500 * 1024 * 1024:  # 500 MB лимит
+            return False, "Кэш базы слишком большой (>500MB)", 0
+        
         with open(EMPLOYEES_CACHE_FILE, "rb") as f:
             EMPLOYEES_DB = pickle.load(f)
         if EMPLOYEES_DB is None or EMPLOYEES_DB.empty:

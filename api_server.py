@@ -33,19 +33,53 @@ from routes import load_routes
 
 API_KEY = os.environ.get("TICKET_API_KEY", "")
 
+# Предупреждение при отсутствии API ключа
+if not API_KEY:
+    import warnings
+    warnings.warn(
+        "⚠️ TICKET_API_KEY не установлен! API доступно всем без ограничений. "
+        "Установите переменную окружения TICKET_API_KEY для безопасности.",
+        UserWarning,
+        stacklevel=2
+    )
+
 app = FastAPI(
     title="Ticket System API",
     version=APP_VERSION,
     description="REST-слой над SQLite и Python-логикой для Electron UI",
 )
 
+# CORS: ограничено localhost для безопасности
+# Для production добавьте реальные домены Electron приложения
+ALLOWED_ORIGINS = [
+    "http://127.0.0.1:5173",  # Vite dev server
+    "http://localhost:5173",
+    "app://localhost",  # Electron protocol
+    "http://127.0.0.1:8765",  # API itself
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "X-Api-Key"],
+    expose_headers=["X-RateLimit-Limit", "X-RateLimit-Remaining"],
+    max_age=600,
 )
+
+# Rate limiting для защиты от brute-force
+try:
+    from slowapi import Limiter, _rate_limit_exceeded_handler
+    from slowapi.errors import RateLimitExceeded
+    from slowapi.util import get_remote_address
+    
+    limiter = Limiter(key_func=get_remote_address)
+    app.state.limiter = limiter
+    app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+except ImportError:
+    limiter = None
+    app.state.limiter = None
 
 
 def _require_api_key(x_api_key: Optional[str] = Header(default=None)) -> None:
@@ -285,7 +319,8 @@ def auth_logins():
 
 
 @app.post("/auth/login")
-def auth_login(body: LoginBody):
+@limiter.limit("5/minute") if limiter else lambda x: x
+def auth_login(body: LoginBody, request: Any = None):
     from users_manager import authenticate, load_users_cache
 
     load_users_cache()

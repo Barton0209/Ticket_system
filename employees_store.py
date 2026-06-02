@@ -136,6 +136,13 @@ def migrate_from_pickle() -> Tuple[bool, str, int]:
     if not EMPLOYEES_CACHE_FILE.exists():
         return False, "pickle не найден", 0
     try:
+        # Проверка целостности pickle файла
+        file_size = EMPLOYEES_CACHE_FILE.stat().st_size
+        if file_size == 0:
+            return False, "pickle пуст (нулевой размер)", 0
+        if file_size > 500 * 1024 * 1024:  # 500 MB лимит
+            return False, "pickle слишком большой (>500MB)", 0
+        
         with open(EMPLOYEES_CACHE_FILE, "rb") as f:
             df = pickle.load(f)
         if df is None or df.empty:

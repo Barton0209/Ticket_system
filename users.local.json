@@ -1,0 +1,9 @@
+{
+  "users": {
+    "ОП Пример": "$2b$12$yLy/GL69frP1ISyImKfKsu47EkbMy7Q0dbhiVjewEDW/T0CEeU0Xm"
+  },
+  "admin": {
+    "username": "Admin",
+    "password": "$2b$12$VkWnErC1DT5mxJRGk52mf.P3GHrDkclAzG3b8S512Sxx16zL2YcFK"
+  }
+}

@@ -1,9 +1,41 @@
-venv/
+```
+# Data and cache files
+*.db
+*.pkl
+*.json
+*.local.json
+
+# Logs and temp files
+*.log
+*.tmp
+
+# Environment files
+.env
+.env.local
+*.env.*
+
+# Editors
+.vscode/
+.idea/
+
+# Python specific
 __pycache__/
 *.pyc
-data/
-users.local.json
-*.xlsx
-*.xls
-*.pdf
-node_modules/
+*.pyo
+*.pyd
+.Python
+*.so
+.coverage
+htmlcov/
+.coverage.*
+.pytest_cache/
+.mypy_cache/
+
+# Build and distribution
+dist/
+build/
+*.egg-info/
+.tox/
+.coverage*
+nosetests.xml
+```

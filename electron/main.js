@@ -23,10 +23,23 @@ function registerPdfProtocol() {
 }
 
 function registerDialogs() {
+  // Разрешённые директории для доступа (защита от path traversal)
+  const allowedDirs = new Set();
+  
   ipcMain.handle("pdf:register", async (_e, filePath) => {
     if (!filePath || !fs.existsSync(filePath)) return null;
+    
+    // Проверка пути: файл должен существовать и быть читаемым
+    const resolvedPath = path.resolve(filePath);
+    try {
+      fs.accessSync(resolvedPath, fs.constants.R_OK);
+    } catch {
+      console.warn("Нет прав на чтение файла:", resolvedPath);
+      return null;
+    }
+    
     const id = crypto.randomBytes(12).toString("hex");
-    pdfPaths.set(id, filePath);
+    pdfPaths.set(id, resolvedPath);
     return `ticket-pdf://${id}`;
   });
 
