@@ -1,22 +1,12 @@
 ```
-# Data and cache files
-*.db
-*.pkl
-*.json
-*.local.json
-
-# Logs and temp files
-*.log
-*.tmp
-
 # Environment files
 .env
 .env.local
 *.env.*
 
-# Editors
-.vscode/
-.idea/
+# Logs and temporary files
+*.log
+*.tmp
 
 # Python specific
 __pycache__/
@@ -24,18 +14,37 @@ __pycache__/
 *.pyo
 *.pyd
 .Python
-*.so
-.coverage
-htmlcov/
-.coverage.*
-.pytest_cache/
-.mypy_cache/
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
 
-# Build and distribution
-dist/
-build/
-*.egg-info/
-.tox/
-.coverage*
-nosetests.xml
+# Database files
+*.db
+*.db-journal
+
+# Backup files
+*.bak
+*.backup
+*.orig
+
+# Windows batch files (if not part of source)
+*.bat
+
+# Coverage reports
+coverage/
+htmlcov/
+.coverage
+*.coverage
+
+# IDE specific
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
 ```
