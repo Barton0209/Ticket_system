@@ -1,9 +1,61 @@
-venv/
-__pycache__/
-*.pyc
-data/
+# === СЕКРЕТЫ И КОНФИГУРАЦИЯ ===
+.env
+.env.local
+.env*.local
 users.local.json
 *.xlsx
 *.xls
-*.pdf
+
+# === ДАННЫЕ ===
+data/
+*.db
+*.pkl
+*.pickle
+
+# === КЭШИ И ВРЕМЕННЫЕ ФАЙЛЫ ===
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# === IDE И РЕДАКТОРЫ ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-workspace
+*.sublime-project
+
+# === ОКРУЖЕНИЕ ===
+venv/
+env/
+ENV/
+.venv
+
+# === ЛОГИ ===
+*.log
+logs/
+
+# === NODE (для Electron) ===
 node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# === PDF И ОБРАБОТАННЫЕ ФАЙЛЫ ===
+temp/
+tmp/
+*.tmp
+*.pdf
