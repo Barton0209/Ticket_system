@@ -16,3 +16,5 @@ class CloudModule:
         return []
     def delete_file(self, remote_path: str) -> bool:
         return True
+
+__all__ = ['CloudModule']

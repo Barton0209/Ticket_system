@@ -69,3 +69,5 @@ class CompareModule:
             return df[df.duplicated(subset=columns, keep=False)]
         return df[df.duplicated(keep=False)]
 
+
+__all__ = ['CompareModule']

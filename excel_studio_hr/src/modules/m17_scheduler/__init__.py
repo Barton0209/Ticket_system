@@ -78,3 +78,5 @@ class SchedulerModule:
         self._save_tasks()
         return True
 
+
+__all__ = ['SchedulerModule']

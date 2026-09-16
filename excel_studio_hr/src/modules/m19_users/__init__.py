@@ -81,3 +81,5 @@ class UsersModule:
             UserRole.VIEWER: ['read']
         }
         return permission in perms.get(user['role'], [])
+
+__all__ = ['UserRole', 'UsersModule']

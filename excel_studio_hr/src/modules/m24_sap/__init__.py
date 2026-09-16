@@ -12,3 +12,5 @@ class SAPModule:
         return True
     def receive_idoc(self) -> List[Dict[str, Any]]:
         return []
+
+__all__ = ['SAPModule']

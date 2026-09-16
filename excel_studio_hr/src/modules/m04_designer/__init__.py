@@ -869,8 +869,4 @@ class ChainManager:
 # Инициализация при импорте
 register_builtin_operations()
 
-__all__ = [
-    'Operation', 'OperationParam', 'OperationChain', 'ChainStep',
-    'ChainManager', 'register_operation', 'get_operation',
-    'get_all_operations', 'get_operations_by_category'
-]
+__all__ = ['OperationParam', 'Operation', 'ChainStep', 'register_operation', 'get_operation']

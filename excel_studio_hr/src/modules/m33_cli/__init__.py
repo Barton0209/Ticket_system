@@ -17,3 +17,5 @@ class CLIModule:
             return parsed.func(parsed)
         self.parser.print_help()
         return 0
+
+__all__ = ['CLIModule']

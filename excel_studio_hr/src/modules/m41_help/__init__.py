@@ -14,3 +14,5 @@ class HelpModule:
         return [t for t in self.topics.values() if query.lower() in t["content"].lower()]
     def get_tutorials(self) -> List[str]:
         return list(self.topics.keys())
+
+__all__ = ['HelpModule']

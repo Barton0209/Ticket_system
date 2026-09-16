@@ -12,3 +12,5 @@ class AnomalyModule:
         return []
     def isolation_forest(self, data: List[List[float]], contamination: float = 0.1) -> List[int]:
         return []
+
+__all__ = ['AnomalyModule']

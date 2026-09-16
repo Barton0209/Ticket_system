@@ -16,3 +16,5 @@ class ChartsModule:
         return {"type": "scatter", "title": title}
     def save_chart(self, chart: Dict, path: str, format: str = "png") -> bool:
         return True
+
+__all__ = ['ChartsModule']

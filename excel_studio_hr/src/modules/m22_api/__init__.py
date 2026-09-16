@@ -13,3 +13,5 @@ class ModuleStub:
     
     def get_status(self) -> str:
         return "Not implemented yet"
+
+__all__ = ['ModuleStub']

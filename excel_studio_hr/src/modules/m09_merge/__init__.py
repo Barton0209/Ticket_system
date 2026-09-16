@@ -335,7 +335,4 @@ def align_columns(
     )
 
 
-__all__ = [
-    'merge_stack', 'merge_join', 'aggregate', 'remove_duplicates',
-    'align_columns', 'MergeResult'
-]
+__all__ = ['MergeResult', 'merge_stack', 'merge_join']

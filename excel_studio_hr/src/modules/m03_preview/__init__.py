@@ -127,3 +127,5 @@ class PreviewModule:
                 'values': value_counts.index.tolist(),
                 'counts': value_counts.values.tolist()
             }
+
+__all__ = ['ColumnStats', 'PreviewData', 'PreviewModule']

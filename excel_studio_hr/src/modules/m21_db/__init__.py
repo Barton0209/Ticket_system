@@ -68,3 +68,5 @@ class DBModule:
             if self.insert_row(table_name, data):
                 count += 1
         return count
+
+__all__ = ['DBModule']

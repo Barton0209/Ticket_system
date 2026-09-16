@@ -14,3 +14,5 @@ class NLPModule:
         return categories[0] if categories else "unknown"
     def sentiment_analysis(self, text: str) -> float:
         return 0.5
+
+__all__ = ['NLPModule']

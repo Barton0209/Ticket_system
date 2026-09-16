@@ -14,3 +14,5 @@ class GeoModule:
         return 0.0
     def batch_geocode(self, addresses: List[str]) -> List[Dict[str, Any]]:
         return [{"address": a, "lat": 0.0, "lon": 0.0} for a in addresses]
+
+__all__ = ['GeoModule']

@@ -14,3 +14,5 @@ class FileWatcherModule:
         self.watchers.clear()
     def is_watching(self, folder: str) -> bool:
         return any(w["folder"] == folder for w in self.watchers)
+
+__all__ = ['FileWatcherModule']

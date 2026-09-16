@@ -81,3 +81,5 @@ class LicenseModule:
         if os.path.exists(self.license_file):
             os.remove(self.license_file)
         return True
+
+__all__ = ['LicenseType', 'LicenseModule']

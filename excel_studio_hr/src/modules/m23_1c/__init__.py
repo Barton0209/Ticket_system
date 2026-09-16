@@ -10,3 +10,5 @@ class Module1C:
         return True
     def import_from_1c(self, exchange_dir: str) -> List[Dict[str, Any]]:
         return []
+
+__all__ = ['Module1C']

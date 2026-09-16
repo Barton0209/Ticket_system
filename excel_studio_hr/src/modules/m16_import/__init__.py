@@ -39,3 +39,5 @@ class ImportModule:
         """Импорт из словаря"""
         return pd.DataFrame.from_dict(data)
 
+
+__all__ = ['ImportModule']

@@ -13,3 +13,5 @@ class EmailModule:
         return True
     def send_report(self, recipients: List[str], report_path: str, template: str = "default") -> bool:
         return True
+
+__all__ = ['EmailModule']

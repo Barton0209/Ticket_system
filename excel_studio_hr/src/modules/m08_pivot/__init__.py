@@ -235,3 +235,5 @@ class PivotModule:
             'total_sum': float(pivot_df.select_dtypes(include='number').sum().sum()) if any(pivot_df.dtypes.apply(pd.api.types.is_numeric_dtype)) else None
         }
 
+
+__all__ = ['PivotField', 'PivotConfig', 'PivotModule']
