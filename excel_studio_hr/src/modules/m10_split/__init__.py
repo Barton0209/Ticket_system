@@ -182,3 +182,5 @@ class SplitModule:
             'total_rows': len(df)
         }
 
+
+__all__ = ['SplitModule']

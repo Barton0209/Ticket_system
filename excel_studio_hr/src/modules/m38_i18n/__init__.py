@@ -22,3 +22,5 @@ class I18nModule:
             self.current_lang = lang
     def get_available_languages(self) -> List[str]:
         return list(self.translations.keys())
+
+__all__ = ['I18nModule']

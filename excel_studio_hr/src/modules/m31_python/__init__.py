@@ -13,3 +13,5 @@ class PythonScriptModule:
         return True
     def get_available_modules(self) -> List[str]:
         return ["pandas", "numpy", "math", "json"]
+
+__all__ = ['PythonScriptModule']

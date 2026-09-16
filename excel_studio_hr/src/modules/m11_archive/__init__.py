@@ -49,3 +49,5 @@ class ArchiveModule:
                 })
         return files
 
+
+__all__ = ['ArchiveModule']

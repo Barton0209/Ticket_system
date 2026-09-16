@@ -47,3 +47,5 @@ class UpdateModule:
             # Откат при ошибке
             return False
 
+
+__all__ = ['UpdateModule']

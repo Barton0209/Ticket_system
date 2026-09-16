@@ -259,3 +259,5 @@ class TemplateModule:
         except Exception as e:
             print(f"Ошибка импорта шаблона: {e}")
             return None
+
+__all__ = ['TemplateParameter', 'Template', 'TemplateModule']

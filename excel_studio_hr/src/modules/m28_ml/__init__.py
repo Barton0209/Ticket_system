@@ -14,3 +14,5 @@ class MLModule:
         return [0] * len(X)
     def detect_outliers(self, X: List[List[float]]) -> List[bool]:
         return [False] * len(X)
+
+__all__ = ['MLModule']

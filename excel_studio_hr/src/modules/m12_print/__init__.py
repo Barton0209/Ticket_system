@@ -44,3 +44,5 @@ class PrintModule:
         """
         return html
 
+
+__all__ = ['PrintModule']

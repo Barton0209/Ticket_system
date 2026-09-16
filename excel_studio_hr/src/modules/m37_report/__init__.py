@@ -14,3 +14,5 @@ class ReportModule:
         return True
     def generate_excel_report(self, template: str, data: Dict[str, Any], output_path: str) -> bool:
         return True
+
+__all__ = ['ReportModule']

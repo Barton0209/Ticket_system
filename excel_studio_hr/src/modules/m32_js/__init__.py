@@ -10,3 +10,5 @@ class JSScriptModule:
         return {"result": None, "error": None}
     def validate_script(self, script: str) -> bool:
         return True
+
+__all__ = ['JSScriptModule']

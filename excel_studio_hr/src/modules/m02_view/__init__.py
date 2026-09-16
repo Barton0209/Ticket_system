@@ -436,4 +436,4 @@ class FileViewer:
         return list(self.sheet_viewers.keys())
 
 
-__all__ = ['SheetViewer', 'FileViewer', 'CellEdit', 'PageConfig']
+__all__ = ['CellEdit', 'PageConfig', 'SheetViewer']

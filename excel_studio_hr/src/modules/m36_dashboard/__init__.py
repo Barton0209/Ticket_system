@@ -14,3 +14,5 @@ class DashboardModule:
         return {"widgets": self.widgets}
     def export_dashboard(self, path: str) -> bool:
         return True
+
+__all__ = ['DashboardModule']

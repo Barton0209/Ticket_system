@@ -47,3 +47,5 @@ class AuditModule:
         
         return logs
 
+
+__all__ = ['AuditModule']
